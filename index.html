@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Иван и Делгира</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Yeseva+One&family=Dancing+Script&family=Cormorant+Garamond&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: #fffaf7;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    section.countdown {
+      position: relative;
+      color: white;
+      text-align: center;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .countdown-overlay {
+      background-color: rgba(0, 0, 0, 0.4);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    section.countdown img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .countdown h2 {
+      margin-bottom: 0;
+      position: relative;
+      z-index: 1;
+      margin-top: 470px;
+    }
+
+    .countdown-timer {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2em;
+      position: relative;
+      z-index: 1;
+      margin-top: 20px;
+    }
+
+    .countdown-timer div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .countdown-timer span {
+      font-size: 0.5em;
+    }
+
+    section.hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .hero-image {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .hero-image img {
+      width: 100%;
+      height: auto;
+      border-bottom-right-radius: 100px;
+    }
+
+    .hero-text {
+      flex: 1;
+      min-width: 300px;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .hero-text h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3em;
+      margin: 0;
+    }
+
+    .hero-text span.and {
+      font-family: 'Dancing Script', cursive;
+      font-size: 0.5em;
+      opacity: 0.5;
+    }
+
+    .hero-text h2 {
+      margin-top: 20px;
+    }
+
+    .hero-text p {
+      max-width: 400px;
+      margin: 20px auto;
+      font-size: 1.1em;
+      line-height: 1.6em;
+    }
+
+    .hero-text .date {
+      font-weight: bold;
+      font-size: 1.1em;
+      margin: 30px auto 10px;
+    }
+
+    .section {
+      padding: 60px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .section h2 {
+      font-family: 'Yeseva One', cursive;
+      font-size: 2em;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .section.venue p:not(:first-of-type) {
+      text-align: right;
+      padding-right: 40px;
+    }
+
+    .section p {
+      font-size: 1.1em;
+      line-height: 1.6em;
+      text-align: justify;
+    }
+
+    .image {
+      width: 100%;
+      margin: 30px 0;
+    }
+
+    .program {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .program-item {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .program-time {
+      width: 80px;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .program-icon {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+    }
+
+    .program-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .program-details {
+      flex: 1;
+    }
+
+    .program-details h3 {
+      margin: 0 0 5px;
+      font-size: 1.2em;
+    }
+
+    .program-details p {
+      margin: 0;
+      font-size: 1em;
+      color: #555;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 0 20px;
+      font-size: 0.9em;
+      opacity: 0.6;
+    }
+
+    #thankYouMessage {
+  display: none;
+  text-align: center;
+  margin-top: 30px;
+  font-size: 1.2em;
+  background: #f0f0eb;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 10px;
+  color: #333; /* This line sets the text color */
+}
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const weddingDate = new Date("2025-08-24T00:00:00").getTime();
+      const daysEl = document.getElementById("days");
+      const hoursEl = document.getElementById("hours");
+      const minutesEl = document.getElementById("minutes");
+      const secondsEl = document.getElementById("seconds");
+
+      function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = weddingDate - now;
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        daysEl.textContent = days;
+        hoursEl.textContent = hours.toString().padStart(2, '0');
+        minutesEl.textContent = minutes.toString().padStart(2, '0');
+        secondsEl.textContent = seconds.toString().padStart(2, '0');
+      }
+
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    });
+  </script>
+</head>
+<body>
+  <!-- БЛОК 1 — Иван и Делгира -->
+  <section class="hero">
+    <div class="hero-image">
+      <img src="photo1.jpg" alt="Иван и Делгира">
+    </div>
+    <div class="hero-text">
+      <h1>ИВАН<br><span class="and">and</span><br>ДЕЛГИРА</h1>
+      <h2>Дорогие гости!</h2>
+      <p>С огромным волнением и радостью мы приглашаем вас разделить с нами этот особенный день — нашу свадьбу.</p>
+      <div class="date">24/08/2025</div>
+      <p>Это будет незабываемое событие, и мы хотим, чтобы вы стали его частью.</p>
+    </div>
+  </section>
+
+  <!-- БЛОК 2 — Программа дня -->
+  <div class="section">
+    <h2>Программа дня</h2>
+    <div class="program">
+      <div class="program-item">
+        <div class="program-time">17:00 - 17:30</div>
+        <div class="program-icon"><img src="1" alt="Сбор гостей"></div>
+        <div class="program-details">
+          <h3>Сбор гостей</h3>
+          <p>Просим взять с собой хорошее настроение и свои улыбки</p>
+        </div>
+      </div>
+      <div class="program-item">
+        <div class="program-time">18:00</div>
+        <div class="program-icon"><img src="2" alt="Свадебная церемония"></div>
+        <div class="program-details">
+          <h3>Свадебная церемония</h3>
+          <p>На всякий случай приготовьте носовые платочки для трогательного момента</p>
+        </div>
+      </div>
+      <div class="program-item">
+        <div class="program-time">17:00</div>
+        <div class="program-icon"><img src="3" alt="Праздничный банкет"></div>
+        <div class="program-details">
+          <h3>Праздничный банкет</h3>
+          <p>Время вкусной еды, танцев и развлечений</p>
+        </div>
+      </div>
+      <div class="program-item">
+        <div class="program-time">23:00</div>
+        <div class="program-icon"><img src="4" alt="Окончание мероприятия"></div>
+        <div class="program-details">
+          <h3>Окончание мероприятия</h3>
+          <p>К сожалению, даже такой прекрасный вечер может закончиться</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- БЛОК 3 — Таймер -->
+  <section class="countdown">
+    <div class="countdown-overlay"></div>
+    <img src="photo2.jpg" alt="Фон">
+    <h2>До свадьбы осталось:</h2>
+    <div class="countdown-timer">
+      <div><div id="days">0</div><span>дней</span></div>
+      <div><div id="hours">00</div><span>часов</span></div>
+      <div><div id="minutes">00</div><span>минут</span></div>
+      <div><div id="seconds">00</div><span>секунд</span></div>
+    </div>
+  </section>
+
+  <!-- БЛОК 4 — Место Торжества -->
+  <div class="section venue">
+    <h2>Место Торжества</h2>
+    <p>Торжество пройдёт в ресторане «Даяна» — красивом и уютном месте, где всё создано для праздника любви.</p>
+    <p><strong>Адрес:</strong> Республика Калмыкия, город Элиста, ул. В.И. Ленина, 8</p>
+    <p><strong>Время прибытия:</strong> к 17:00</p>
+    <div style="text-align: center; margin-top: 20px;">
+  <a href="https://yandex.ru/maps/?text=ресторан Даяна Элиста" target="_blank" style="background: #1c2541; color: #f7f5ed; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+    Открыть на карте
+  </a>
+</div>
+    <img class="image" src="place.jpg" alt="Место торжества">
+  </div>
+
+    <!-- БЛОК 5 — Анкета -->
+   <div class="section">
+    <h2>Анкета гостя</h2>
+    <form id="guestForm" style="max-width: 600px; margin: 0 auto; text-align: left;">
+      <label for="surname">Ваша фамилия:</label>
+      <input type="text" id="surname" name="surname" required style="width: 100%; padding: 10px; margin-top: 5px;">
+
+      <label for="name" style="margin-top: 15px; display: block;">Ваше имя:</label>
+      <input type="text" id="name" name="name" required style="width: 100%; padding: 10px; margin-top: 5px;">
+
+      <p style="margin-top: 20px; font-weight: bold;">Присутствие:</p>
+      <label><input type="radio" name="attendance" value="Приду с удовольствием" required> Я с удовольствием приду</label><br>
+      <label><input type="radio" name="attendance" value="Не смогу"> К сожалению, не смогу присутствовать</label>
+
+       <button type="submit" id="submitBtn" style="margin-top: 20px; padding: 10px 20px; font-weight: bold; cursor: pointer; border: none; border-radius: 5px; background-color: #000; color: #f7f5ed; display: block; margin-left: auto; margin-right: auto;">📨 Отправить</button>
+    </form>
+    <p id="thankYouMessage">
+      Спасибо! Ваша заявка отправлена 💌<br>
+      <span class="telegram-link">Будем рады, если вы запишете кружочки 📹 и поделитесь ими в <a href="https://t.me/+0qK6wIe_i2xjYmZh" target="_blank">нашей Telegram-беседе</a></span>
+    </p>
+  </div>
+<script> document.getElementById('guestForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Отправляется...';
+
+    const data = new FormData(form);
+    const message = `Анкета с сайта:\nФамилия: ${data.get('surname')}\nИмя: ${data.get('name')}\nПрисутствие: ${data.get('attendance')}\nКомментарий: ${data.get('message')}`;
+
+    fetch(`https://api.telegram.org/bot7595772666:AAHRlv94gkV4jXDgaZDg1fVWbMN-K9N74-A/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: -4975698934,
+        text: message
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.ok) {
+        form.style.display = 'none';
+        document.getElementById('thankYouMessage').style.display = 'block';
+      } else {
+        btn.disabled = false;
+        btn.textContent = '📨 Отправить';
+        alert('Ошибка при отправке. Попробуйте ещё раз.');
+      }
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btn.textContent = '📨 Отправить';
+      alert('Сбой соединения. Попробуйте позже.');
+    });
+  });</script>
+ 
+  <footer>
+    <p>© Иван и Делгира</p>
+  </footer>
+</body>
+</html>
